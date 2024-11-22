@@ -12,7 +12,7 @@ import WQMeta from "../../Pages/wqMeta";
 const Router = createBrowserRouter(
   [
     {
-      path: "/frontend/*", // Changed from "/"
+      path: "/frontend", // Changed from "/"
       element: <App />,
       children: [
         {
