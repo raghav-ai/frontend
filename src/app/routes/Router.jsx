@@ -11,7 +11,7 @@ import WQData from "../../Pages/wqData";
 import WQMeta from "../../Pages/wqMeta";
 const Router = createBrowserRouter([
   {
-    path: "/",
+    path: "frontend/",
     element: <App />,
     children: [
       {
