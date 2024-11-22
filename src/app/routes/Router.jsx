@@ -9,50 +9,54 @@ import DisData from "../../Pages/disData";
 import WQStation from "../../Pages/wqStat";
 import WQData from "../../Pages/wqData";
 import WQMeta from "../../Pages/wqMeta";
-const Router = createBrowserRouter([
+const Router = createBrowserRouter(
+  [
+    {
+      path: "/frontend/*", // Changed from "/"
+      element: <App />,
+      children: [
+        {
+          path: "", // Changed from "/"
+          element: <Home />,
+        },
+        {
+          path: "map", // Removed leading slash
+          element: <Mapa />,
+        },
+        {
+          path: "data",
+          element: <Data />,
+        },
+        {
+          path: "graph",
+          element: <Graph />,
+        },
+        {
+          path: "dis",
+          element: <DIStation />,
+        },
+        {
+          path: "dis-data/:id",
+          element: <DisData />,
+        },
+        {
+          path: "wqm",
+          element: <WQMeta />,
+        },
+        {
+          path: "wqs/:id",
+          element: <WQStation />,
+        },
+        {
+          path: "wq/:id",
+          element: <WQData />,
+        },
+      ],
+    },
+  ],
   {
-    path: "frontend/",
-    element: <App />,
-    children: [
-      {
-        path: "/",
-        element: <Home />,
-      },
-      {
-        path: "/map",
-        element: <Mapa />,
-      },
-      {
-        path: "/data",
-        element: <Data />,
-      },
-      {
-        path: "/graph",
-        element: <Graph />,
-      },
-      {
-        path: "/dis",
-        element: <DIStation/>,
-      },
-
-      {
-        path: "/dis-data/:id",
-        element: <DisData />,
-      },
-      {
-        path: "/wqm",
-        element: <WQMeta/>,
-      },
-      {
-        path: "/wqs/:id",
-        element: <WQStation />,
-      },
-      {
-        path: "/wq/:id",
-        element: <WQData/>,
-      },
-    ],
-  },
-]);
+    basename: "/frontend",
+  }
+);
 
 export default Router;
