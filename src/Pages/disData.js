@@ -184,10 +184,10 @@ const DisData = () => {
                 <table className="w-full text-center text-black table-fixed">
                   <thead className="text-xl text-gray-700 uppercase bg-gray-50 sticky top-0">
                     <tr>
-                      <th scope="col" className="py-4  w-1/4 ">
+                      <th scope="col" className="py-4  w-1/6 ">
                         Index
                       </th>
-                      <th scope="col" className="pl-4 pr-0  w-1/4 ">
+                      <th scope="col" className="pl-4 pr-0  w-2/6 ">
                         <div className="inline-flex">
                           <span>Date</span>
                           <div className="flex flex-col items-center ml-1">
@@ -218,11 +218,11 @@ const DisData = () => {
                           </div>
                         </div>
                       </th>
-                      <th scope="col" className="pl-4 pr-0  w-1/4">
+                      <th scope="col" className="pl-4 pr-0  w-1/6">
                         <div className="inline-flex">
                           <span>
                             Discharge(<span className="lowercase">m</span>
-                            <sup>3</sup>)
+                            <sup>3</sup>/s)
                           </span>
                           <div className="flex flex-col items-center ml-1">
                             <button
@@ -250,7 +250,7 @@ const DisData = () => {
                           </div>
                         </div>
                       </th>
-                      <th scope="col" className="pl-4 pr-0  w-1/4">
+                      <th scope="col" className="pl-4 pr-0  w-2/6">
                         <div className="inline-flex">
                           <span>Discharge Symbol</span>
                           <div className="flex flex-col items-center ml-1">
@@ -282,11 +282,11 @@ const DisData = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="text-lg">
                     {currentRows.map((item, index) => (
                       <tr
                         key={index}
-                        className="odd:bg-gray-400 even:bg-slate-200"
+                        className="odd:bg-gray-300 even:bg-slate-200"
                       >
                         <td className=" py-4 ">
                           {indexOfFirstRow + index + 1}
@@ -326,7 +326,7 @@ const DisData = () => {
                 <button
                   onClick={() => paginate(currentPage - 1)}
                   disabled={currentPage === 1 || totalPages === 0}
-                  className="px-4 py-2 mr-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+                  className="px-4 py-2 mr-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:text-black"
                 >
                   Previous
                 </button>
@@ -342,7 +342,7 @@ const DisData = () => {
                 <button
                   onClick={() => paginate(currentPage + 1)}
                   disabled={currentPage >= totalPages}
-                  className="px-4 py-2 ml-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+                  className="px-4 py-2 ml-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:text-black"
                 >
                   Next
                 </button>

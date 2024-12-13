@@ -173,10 +173,10 @@ const WQData = () => {
         <div className="flex">
           <p>DOI: </p>
           <Link
-            to={"/wqs/" + (meta.doi).slice(9)}
+            to={"/wqs/" + meta?.doi?.slice(9)}
             className="cursor-pointer text-blue-600 underline"
           >
-            {meta.doi}
+            {(meta.doi)}
           </Link>{" "}
         </div>
         <p>Location ID: {meta.locationId} </p>
@@ -191,7 +191,7 @@ const WQData = () => {
             : "N/A"}
         </p>
         <p>Location Type: {meta.monitoringLocationType} </p>
-        <p>Hub:{meta.hub}</p>
+        <p>Hub: {" "}{meta.hub}</p>
       </div>
       <div className="">
         <div className="px-6 py-3 flex gap-20">
@@ -199,7 +199,7 @@ const WQData = () => {
             placeholder={"Select Characteristic Names"}
             ops={nutrients}
             isMulti={true}
-            style={{ top: "7px", width: "20%", minWidth: "fit-content" }}
+            style={{ top: "7px", width: "20%" }}
             onSelect={HandleChange1}
           />
 
@@ -365,11 +365,11 @@ const WQData = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="text-lg">
                     {currentRows.map((item, index) => (
                       <tr
                         key={index}
-                        className="odd:bg-gray-400 even:bg-slate-200"
+                        className="odd:bg-gray-300 even:bg-slate-200"
                       >
                         <td className=" py-4 ">
                           {indexOfFirstRow + index + 1}
@@ -384,7 +384,7 @@ const WQData = () => {
                         <td className=" py-4  ">{item.methodSpeciation} </td>
 
                         <td className=" px-4 py-4   ">
-                          {item.value}
+                          {item.value}{" "}
                           {item.resultUnit === "" || item.resultUnit === "None"
                             ? ""
                             : item.resultUnit === "deg C"
@@ -423,7 +423,7 @@ const WQData = () => {
                 <button
                   onClick={() => paginate(currentPage - 1)}
                   disabled={currentPage === 1 || totalPages === 0}
-                  className="px-4 py-2 mr-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+                  className="px-4 py-2 mr-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:text-black"
                 >
                   Previous
                 </button>
@@ -439,7 +439,7 @@ const WQData = () => {
                 <button
                   onClick={() => paginate(currentPage + 1)}
                   disabled={currentPage >= totalPages}
-                  className="px-4 py-2 ml-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+                  className="px-4 py-2 ml-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:text-black"
                 >
                   Next
                 </button>

@@ -14,7 +14,7 @@ const Data = () => {
             onClick={() => setWQ(true)}
             className="px-12 py-6 text-xl font-bold bg-blue-500 hover:bg-blue-900 text-white rounded disabled:bg-gray-300"
           >
-            WaterQuality
+            Water Quality
           </button>
           <button
             onClick={() => setDIS(true)}
@@ -27,7 +27,7 @@ const Data = () => {
 
       {WQ && (
         <>
-          <button onClick={() => setWQ(!WQ)} className="px-12 py-6 text-xl bg-blue-500 hover:bg-blue-900">
+          <button onClick={() => setWQ(!WQ)} className="px-12 py-6 text-xl bg-blue-500 hover:bg-blue-900 text-white">
             back
           </button>
           <WQMeta/>
@@ -35,7 +35,7 @@ const Data = () => {
       )}
       {DIS && (
         <>
-        <button onClick={() => setDIS(!DIS)} className="px-12 py-6 text-xl bg-blue-500 hover:bg-blue-900">
+        <button onClick={() => setDIS(!DIS)} className="px-12 py-6 text-xl bg-blue-500 hover:bg-blue-900 text-white">
           back
         </button>
         <DiStation/>

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useMemo } from "react";
 import * as d3 from "d3";
 
-const ScatterPlot = ({
+const ScatterPlot1 = ({
   data,
   width,
   height,
@@ -31,7 +31,7 @@ const ScatterPlot = ({
       .map((item) => ({
         date: new Date(item.date),
         discharge: parseFloat(item.discharge),
-        flux: parseFloat(item.flux),
+        conc: parseFloat(item.conc),
       }))
       .sort((a, b) => a.date - b.date);
   }, [data, startDate, endDate]);
@@ -57,7 +57,7 @@ const ScatterPlot = ({
 
     const yScale = d3
       .scaleLinear()
-      .domain([0, d3.max(validData, (d) => d.flux)])
+      .domain([0, d3.max(validData, (d) => d.conc)])
       .range([Innerheight, 0]);
 
     // Axes
@@ -77,7 +77,7 @@ const ScatterPlot = ({
       .enter()
       .append("circle")
       .attr("cx", (d) => xScale(d.discharge))
-      .attr("cy", (d) => yScale(d.flux))
+      .attr("cy", (d) => yScale(d.conc))
       .attr("r", 2)
       .attr("fill", "#4299e1")
       .attr("class", "hover:opacity-75 transition-opacity duration-200");
@@ -117,4 +117,4 @@ const ScatterPlot = ({
   );
 };
 
-export default ScatterPlot;
+export default ScatterPlot1;

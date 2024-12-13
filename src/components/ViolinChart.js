@@ -1,7 +1,18 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import * as d3 from "d3";
 
-const ViolinChart = ({ data, title, xLabel, yLabel, width, height,startDate,endDate }) => {
+const ViolinChart = ({
+  data,
+  title,
+  xLabel,
+  yLabel,
+  width,
+  height,
+  startDate,
+  endDate,
+  temporal,
+  station
+}) => {
   const [error, setError] = useState(null);
   const svgRef = useRef();
 
@@ -37,7 +48,7 @@ const ViolinChart = ({ data, title, xLabel, yLabel, width, height,startDate,endD
         }
         return acc;
       }, []);
-  }, [data,startDate,endDate]);
+  }, [data, startDate, endDate]);
 
   useEffect(() => {
     if (!processedData || processedData.length === 0) {
@@ -176,12 +187,12 @@ const ViolinChart = ({ data, title, xLabel, yLabel, width, height,startDate,endD
       .style("font-size", "16px")
       .style("font-weight", "bold")
       .text(yLabel);
-  }, [processedData, width, height, title, xLabel, yLabel,startDate,endDate]);
+  }, [processedData, width, height, title, xLabel, yLabel, startDate, endDate]);
 
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="w-full relative bg-white pb-4">
+    <div className="mt-4 ml-4 pb-4 rounded-xl bg-white w-fit  relative">
       <svg className="" ref={svgRef} width={width} height={height}></svg>
     </div>
   );

@@ -93,7 +93,7 @@ const CustomSelect = ({ placeholder, ops, isMulti, style, onSelect }) => {
 
   return (
     <div ref={inputRef} className="relative" style={style}>
-      <div className="flex h-8 border-2 border-black pl-5  bg-red-300 text-lg font-bold">
+      <div className="flex h-8 border-2 border-black pl-5 bg-orange-400 text-lg font-bold">
         <p className="w-full overflow-hidden ">
           {Array.isArray(Value) ? Value.map((t, i) => t + " ") : Value}
         </p>

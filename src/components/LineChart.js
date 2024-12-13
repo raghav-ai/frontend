@@ -10,6 +10,7 @@ const LineChart = ({
   title,
   startDate,
   endDate,
+  station
 }) => {
   const svgRef = useRef(null);
   const [hoveredPoint, setHoveredPoint] = useState(null);
@@ -45,7 +46,11 @@ const LineChart = ({
       const prevDate = array[index - 1].date;
       const currentDate = item.date;
       const dayDiff = (currentDate - prevDate) / (1000 * 60 * 60 * 24);
-      return { ...item, gap: dayDiff > 1 };
+      return { 
+        ...item, 
+        gap: dayDiff > 1,
+        prevPoint: array[index - 1] // Store previous point for gap visualization
+      };
     });
   }, [validData]);
 
@@ -80,6 +85,7 @@ const LineChart = ({
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
+    // Add basic axes and title elements
     g.append("g")
       .attr("transform", `translate(0,${innerHeight})`)
       .call(
@@ -92,7 +98,6 @@ const LineChart = ({
               (d, i) =>
                 i > 0 && d.getFullYear() === allTicks[i - 1].getFullYear()
             );
-
             return d3.timeFormat(isMonthlyTicks ? "%b %Y" : "%Y")(date);
           })
       )
@@ -101,6 +106,7 @@ const LineChart = ({
 
     g.append("g").call(d3.axisLeft(y)).style("font-size", "14px");
 
+    // Add the main line
     g.append("path")
       .datum(dataWithGaps)
       .attr("fill", "none")
@@ -108,24 +114,111 @@ const LineChart = ({
       .attr("stroke-width", 2.5)
       .attr("d", line);
 
-    // Add points to show individual data points
-    g.selectAll(".dot")
+    // Add gap indicators
+    const gapPoints = g.selectAll(".gap-indicator")
+      .data(dataWithGaps.filter(d => d.gap))
+      .enter()
+      .append("g")
+      .attr("class", "gap-indicator");
+
+    // Add black dots for gap points
+    gapPoints.append("circle")
+      .attr("cx", d => x(d.prevPoint.date))
+      .attr("cy", d => y(d.prevPoint.value))
+      .attr("r", 4)
+      .attr("fill", "black");
+
+    gapPoints.append("circle")
+      .attr("cx", d => x(d.date))
+      .attr("cy", d => y(d.value))
+      .attr("r", 4)
+      .attr("fill", "black");
+
+    // Add dashed lines between gap points
+    gapPoints.append("line")
+      .attr("x1", d => x(d.prevPoint.date))
+      .attr("y1", d => y(d.prevPoint.value))
+      .attr("x2", d => x(d.date))
+      .attr("y2", d => y(d.value))
+      .attr("stroke", "black")
+      .attr("stroke-width", 1.5)
+      .attr("stroke-dasharray", "4,4");
+
+    // Add regular data points
+    /*g.selectAll(".dot")
       .data(dataWithGaps)
       .enter()
       .append("circle")
       .attr("class", "dot")
       .attr("cx", (d) => x(d.date))
       .attr("cy", (d) => y(d.value))
-      .attr("r", 0)
+      .attr("r", 3)
+      .attr("fill", "steelblue");*/
+
+    // Add tooltip functionalitydisabled:font-black
+
+    const legend = g.append("g")
+      .attr("class", "legend")
+      .attr("transform", `translate(${innerWidth - 200}, 0)`); // Moved 200px from right edge
+
+    // Data point legend item
+    const dataLegend = legend.append("g")
+      .attr("transform", "translate(0, 0)");
+    
+    dataLegend.append("path")
+      .attr("d", d3.line()([[0, 0], [20, 0]]))
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 2.5);
+    
+    dataLegend.append("circle")
+      .attr("cx", 10)
+      .attr("cy", 0)
+      .attr("r", 3)
       .attr("fill", "steelblue");
+    
+    dataLegend.append("text")
+      .attr("x", 30)
+      .attr("y", 4)
+      .text("Data")
+      .style("font-size", "18px");
+
+    // Gap legend item
+    const gapLegend = legend.append("g")
+      .attr("transform", "translate(0, 25)");
+    
+    gapLegend.append("line")
+      .attr("x1", 0)
+      .attr("y1", 0)
+      .attr("x2", 20)
+      .attr("y2", 0)
+      .attr("stroke", "black")
+      .attr("stroke-width", 1.5)
+      .attr("stroke-dasharray", "4,4");
+    
+    gapLegend.append("circle")
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", 4)
+      .attr("fill", "black");
+    
+    gapLegend.append("circle")
+      .attr("cx", 20)
+      .attr("cy", 0)
+      .attr("r", 4)
+      .attr("fill", "black");
+    
+    gapLegend.append("text")
+      .attr("x", 30)
+      .attr("y", 4)
+      .text("Gap")
+      .style("font-size", "18px");
 
     const tooltip = g
       .append("g")
       .attr("class", "tooltip")
       .style("display", "none");
 
-    tooltip.append("circle").attr("r", 4).style("fill", "red");
-
+    tooltip.append("circle").attr("r", 4).style("fill", "#9a3412");
     tooltip.append("text").attr("x", 9).attr("dy", ".35em");
 
     g.append("rect")
@@ -151,6 +244,7 @@ const LineChart = ({
         setHoveredPoint(d);
       });
 
+    // Add chart labels
     svg
       .append("text")
       .attr("x", width / 2)
@@ -178,6 +272,7 @@ const LineChart = ({
       .style("font-size", "16px")
       .style("font-weight", "bold")
       .text(yLabel);
+
   }, [
     dataWithGaps,
     width,
@@ -192,10 +287,10 @@ const LineChart = ({
   ]);
 
   return (
-    <div className="bg-white w-full pb-4" style={{ position: "relative" }}>
+    <div className="mt-4 ml-4 pb-4 rounded-xl bg-white w-fit  relative">
       <svg className="" ref={svgRef} width={width} height={height} />
       {hoveredPoint && (
-        <div className=" absolute top-0 flex gap-4 left-10 p-2 rounded shadow-md z-10">
+        <div className="absolute top-0 flex gap-4 left-10 p-2 rounded shadow-md z-10">
           <p>Date: {hoveredPoint.date.toLocaleDateString()}</p>
           <p>Value: {hoveredPoint.value.toFixed(2)}</p>
         </div>

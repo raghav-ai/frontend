@@ -11,7 +11,6 @@ const BoxPlot = ({
   startDate,
   endDate,
   temporal,
-  station
 }) => {
   const svgRef = useRef();
   const tooltipRef = useRef();
@@ -20,16 +19,6 @@ const BoxPlot = ({
   const margin = { top: 70, right: 30, bottom: 40, left: 80 };
   const parseDate = d3.timeParse("%Y-%m-%d");
 
-  const getSeasonAndYear = (date) => {
-    const month = date.getMonth();
-    const year = date.getFullYear();
-    
-    if (month <= 2) return { season: "Winter", year };
-    if (month <= 5) return { season: "Spring", year };
-    if (month <= 8) return { season: "Summer", year };
-    return { season: "Fall", year };
-  };
-
   useEffect(() => {
     if (!data || !data.length) return;
 
@@ -37,7 +26,7 @@ const BoxPlot = ({
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    // Process and group data by temporal parameter
+    // Process and group data by year
     const formattedData = data
       .filter((item) => {
         const isValidDate = !isNaN(new Date(item.date).getTime());
@@ -56,13 +45,6 @@ const BoxPlot = ({
       })
       .map((d) => {
         const date = parseDate(d.date);
-        if (temporal === "Seasonal") {
-          const { season, year } = getSeasonAndYear(date);
-          return {
-            timeKey: `${season} - ${year}`,
-            value: d.value,
-          };
-        }
         return {
           timeKey: temporal === "Monthly" 
             ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
@@ -71,10 +53,10 @@ const BoxPlot = ({
         };
       });
 
-    // Group by timeKey and calculate statistics
+    // Group by year and calculate statistics
     const groupedData = Array.from(
-      d3.group(formattedData, (d) => d.timeKey),
-      ([timeKey, values]) => {
+      d3.group(formattedData, (d) => d.year),
+      ([year, values]) => {
         const sorted = values.map((d) => d.value).sort(d3.ascending);
         const q1 = d3.quantile(sorted, 0.25);
         const median = d3.quantile(sorted, 0.5);
@@ -87,7 +69,7 @@ const BoxPlot = ({
         );
 
         return {
-          timeKey,
+          year,
           q1,
           median,
           q3,
@@ -96,21 +78,12 @@ const BoxPlot = ({
           outliers,
         };
       }
-    ).sort((a, b) => {
-      if (temporal === "Seasonal") {
-        const [seasonA, yearA] = a.timeKey.split(" - ");
-        const [seasonB, yearB] = b.timeKey.split(" - ");
-        const seasons = ["Winter", "Spring", "Summer", "Fall"];
-        if (yearA !== yearB) return yearA - yearB;
-        return seasons.indexOf(seasonA) - seasons.indexOf(seasonB);
-      }
-      return d3.ascending(a.timeKey, b.timeKey);
-    });
+    ).sort((a, b) => d3.ascending(a.year, b.year)); // Sort by year
 
     // Create scales
     const xScale = d3
       .scaleBand()
-      .domain(groupedData.map((d) => d.timeKey))
+      .domain(groupedData.map((d) => d.year))
       .range([margin.left, width - margin.right])
       .padding(0.2);
 
@@ -123,31 +96,13 @@ const BoxPlot = ({
       .nice()
       .range([height - margin.bottom, margin.top]);
 
-    // Calculate optimal number of ticks based on width
-    const optimalTickCount = Math.floor(width / (temporal === "Monthly" ? 90 : 80));
-    
-    // Create custom tick values
-    const allTicks = groupedData.map(d => d.timeKey);
-    const stride = Math.ceil(allTicks.length / optimalTickCount);
-    const customTickValues = allTicks.filter((_, i) => i % stride === 0);
-
-    // Add axes with optimized tick count
+    // Add axes
     svg
       .append("g")
       .attr("transform", `translate(0,${height - margin.bottom})`)
-      .call(
-        d3.axisBottom(xScale)
-          .tickValues(customTickValues)
-      )
+      .call(d3.axisBottom(xScale).tickFormat((d) => d.toString()))
       .selectAll("text")
-      .style("font-size", "14px")
-      .attr("transform", temporal === "Seasonal" ? "rotate(0)" : "rotate(0)")
-      .attr("text-anchor", temporal === "Seasonal" ? "middle" : "middle")
-      .attr("dx", temporal === "Seasonal" ? "0" : "0")
-      .attr("dy", temporal === "Seasonal" ? "0.5em" : "0.5em");
-
-    // Rest of the code remains the same...
-    // (The drawing of boxes, whiskers, outliers, etc.)
+      .style("font-size", "14px");
 
     svg
       .append("g")
@@ -165,7 +120,7 @@ const BoxPlot = ({
       .enter()
       .append("g")
       .attr("class", "box")
-      .attr("transform", (d) => `translate(${xScale(d.timeKey)},0)`);
+      .attr("transform", (d) => `translate(${xScale(d.year)},0)`);
 
     // Draw boxes
     boxes
@@ -228,7 +183,7 @@ const BoxPlot = ({
     // Draw outliers
     boxes
       .selectAll("circle.outlier")
-      .data((d) => d.outliers.map((value) => ({ timeKey: d.timeKey, value })))
+      .data((d) => d.outliers.map((value) => ({ year: d.year, value })))
       .enter()
       .append("circle")
       .attr("class", "outlier")
@@ -243,8 +198,8 @@ const BoxPlot = ({
         setTooltipPosition({ x: event.clientX, y: event.clientY });
         d3.select(tooltipRef.current)
           .style("display", "block")
-          .style("left", `${event.clientX}px`)
-          .style("top", `${event.clientY}px`);
+          .style("left", `${event.clientX}`)
+          .style("top", `${event.clientY}`);
       })
       .on("mouseout", () => {
         setHoveredPoint(null);
@@ -288,7 +243,6 @@ const BoxPlot = ({
     yLabel,
     startDate,
     endDate,
-    temporal,
     parseDate,
     margin.top,
     margin.bottom,
@@ -297,25 +251,28 @@ const BoxPlot = ({
   ]);
 
   return (
-    <div className="mt-4 ml-4 pb-4 rounded-xl bg-white w-fit relative">
+    <div className="mt-4 ml-4 pb-4 rounded-xl bg-white w-fit  relative">
       <svg ref={svgRef} width={width} height={height}></svg>
       <div
         ref={tooltipRef}
-        className="bg-white shadow-lg rounded-md pointer-events-none z-10"
+        className="bg-white shadow-lg  rounded-md pointer-events-none z-10"
         style={{
           position: "fixed",
           left: `${tooltipPosition.x}px`,
           top: `${tooltipPosition.y}px`,
-          display: hoveredPoint ? "block" : "none",
-          padding: "0.75rem",
+          display:
+            tooltipPosition.x === 0 && tooltipPosition.y === 0
+              ? "none"
+              : "block",
+          padding:
+            tooltipPosition.x === 0 && tooltipPosition.y === 0
+              ? "0"
+              : "0.75rem",
         }}
       >
         {hoveredPoint && (
           <div>
-            <div className="text-xl font-bold">
-              {temporal === "Monthly" ? "Month" : 
-               temporal === "Seasonal" ? "Season" : "Year"}: {hoveredPoint.timeKey}
-            </div>
+            <div className="text-xl font-bold">Year: {hoveredPoint.year}</div>
             <div className="text-lg">
               Value: {hoveredPoint.value.toFixed(2)}
             </div>

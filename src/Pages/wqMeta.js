@@ -305,11 +305,11 @@ const WQMeta = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="text-lg">
                     {currentRows.map((item, index) => (
                       <tr
                         key={index}
-                        className="odd:bg-gray-400 even:bg-slate-200"
+                        className="odd:bg-gray-300 even:bg-slate-200"
                       >
                         <td className=" py-4 ">
                           {indexOfFirstRow + index + 1}
@@ -359,7 +359,7 @@ const WQMeta = () => {
                 <button
                   onClick={() => paginate(currentPage - 1)}
                   disabled={currentPage === 1 || totalPages === 0}
-                  className="px-4 py-2 mr-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+                  className="px-4 py-2 mr-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:text-black"
                 >
                   Previous
                 </button>
@@ -375,7 +375,7 @@ const WQMeta = () => {
                 <button
                   onClick={() => paginate(currentPage + 1)}
                   disabled={currentPage >= totalPages}
-                  className="px-4 py-2 ml-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+                  className="px-4 py-2 ml-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:text-black"
                 >
                   Next
                 </button>

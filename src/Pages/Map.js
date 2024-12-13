@@ -4,6 +4,7 @@ import { Icon, divIcon } from "leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Card } from "@mui/material";
 
 // Create axios instance with default config
 const axiosInstance = axios.create({
@@ -68,14 +69,14 @@ export default function Mapa() {
 
   const customIcon = new Icon({
     iconUrl: "assets/orangecircle.svg",
-    iconSize: [16, 16],
+    iconSize: [20, 20],
     iconAnchor: [0, 0],
     popupAnchor: [0, -10],
   });
 
   const customIcon1 = new Icon({
     iconUrl: "assets/bluecircle.svg",
-    iconSize: [16, 16],
+    iconSize: [20, 20],
     iconAnchor: [0, 0],
     popupAnchor: [0, -10],
   });
@@ -84,7 +85,7 @@ export default function Mapa() {
     return divIcon({
       html: `<div>${cluster.getChildCount()}</div>`,
       className: "custom-marker-cluster",
-      iconSize: [40, 40],
+      iconSize: [48,48],
     });
   };
 
@@ -92,24 +93,26 @@ export default function Mapa() {
     return divIcon({
       html: `<div>${cluster.getChildCount()}</div>`,
       className: "custom-marker-cluster-1",
-      iconSize: [40, 40],
+      iconSize: [48,48],
     });
   };
 
   const HandleClick = (latitude, longitude, e) => {
     setCoords([latitude, longitude]); // Update coords to center the map
-    setZoom(12); // Update zoom level
+    setZoom(15); // Update zoom level
   };
 
   return (
     <div className="">
       {!loading ? (
+      <div className="relative w-full">  
         <MapContainer center={coords} zoom={zoom} className="">
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <SetViewOnClick coords={coords} zoom={zoom} />
+
           <MarkerClusterGroup
             chunkedLoading
             maxClusterRadius={300}
@@ -126,12 +129,18 @@ export default function Mapa() {
                   click: (e) => {
                     HandleClick(d.latitude, d.longitude, e);
                   },
+                  mouseover: (e) => {
+                    e.target.bindTooltip(d.stationName+", ("+d.stationNo+")").openTooltip();
+                  },
+                  mouseout: (e) => {
+                    e.target.closeTooltip();
+                  },
                 }}
               >
                 <Popup>
-                  <div className="text-black font-semibold">
+                  <div className="text-black font-semibold text-lg w-80">
                     <Link
-                      to={"/dis-data/"+d.stationNo}
+                      to={"/dis-data/" + d.stationNo}
                       className="text-blue-500 underline cursor-pointer"
                     >
                       {" "}
@@ -164,12 +173,18 @@ export default function Mapa() {
                   click: (e) => {
                     HandleClick(d.latitude, d.longitude, e);
                   },
+                  mouseover: (e) => {
+                    e.target.bindTooltip(d.name+", ("+d.locationId+")").openTooltip();
+                  },
+                  mouseout: (e) => {
+                    e.target.closeTooltip();
+                  },
                 }}
               >
                 <Popup>
-                  <div className="text-black font-semibold">
+                  <div className="text-black text-lg font-semibold w-80">
                     <Link
-                      to={"/wq/"+d.locationId}
+                      to={"/wq/" + d.locationId}
                       className="text-blue-500 underline cursor-pointer"
                     >
                       {" "}
@@ -177,7 +192,7 @@ export default function Mapa() {
                     </Link>
                     <br /> DOI :{" "}
                     <Link
-                      to={"/wqs/"+ d.doi.slice(9)}
+                      to={"/wqs/" + d.doi.slice(9)}
                       className="text-blue-500 underline cursor-pointer"
                     >
                       {" "}
@@ -193,6 +208,11 @@ export default function Mapa() {
             ))}
           </MarkerClusterGroup>
         </MapContainer>
+        <Card className="absolute top-3 left-20 z-[1000] w-96 p-6 bg-white/90 backdrop-blur-sm shadow-xl">
+            <h2 className="text-xl font-bold mb-4">Map Overlay</h2>
+            <p>Hello</p>
+          </Card>
+        </div>
       ) : (
         <div>{error ? error : "Loading..."}</div>
       )}

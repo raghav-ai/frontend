@@ -4,6 +4,8 @@ import ViolinChart from "../components/ViolinChart";
 import BoxPlot from "../components/BoxPlot";
 import TypeCard from "../components/TypeCard";
 import axios from "axios";
+import ScatterPlot from "../components/ScatterPlot";
+import ScatterPlot1 from "../components/ScatterPlot1";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:8080",
@@ -25,7 +27,7 @@ const Graph = () => {
 
   const buildUrl = (graph) => {
     if (!graph) return "";
-
+    console.log(graph);
     const {
       graph: graphType,
       wqStation,
@@ -33,21 +35,31 @@ const Graph = () => {
       characteristic,
       load,
     } = graph;
-
     switch (graphType) {
-      case "Load Estimation":
+      case "Flux vs Time - Line Graph":
         return load
-          ? `load-calculation?nutrients=` + encodeURIComponent(load)
+          ? `load-calculation?nutrients=` +
+              encodeURIComponent(load) +
+              `&gType=ft`
+          : "";
+      case "Conc vs Time - Line Graph":
+        return load
+          ? `load-calculation?nutrients=` +
+              encodeURIComponent(load) +
+              `&gType=ct`
+          : "";
+      case "Flux Q - Scatter Plot":
+      case "Conc Q - Scatter Plot":
+        return load
+          ? `cqf-calculation?nutrients=` + encodeURIComponent(load)
           : "";
       case "Hydrograph":
         return wqStation && disStation && characteristic ? "" : "";
-      case "Discharge Gap - Line Graph":
-        return disStation ? `/discharge-gap-data/${disStation}` : "";
-      case "Discharge - Line Graph":
-      case "Discharge - Box Plot":
-      case "Discharge - Violin Chart":
+      case "Discharge vs Time - Line Graph":
+      case "Discharge vs Time - Box Plot":
+      case "Discharge vs Time - Violin Chart":
         return disStation ? `/discharge-data/${disStation}` : "";
-      case "Water Quality - Box Plot":
+      case "Water Quality vs Time - Box Plot":
       case "Water Quality - Scatter Plot":
         return wqStation && characteristic
           ? `/wq-data/${wqStation}?nutrients=${characteristic}`
@@ -67,7 +79,12 @@ const Graph = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (url1 === "") return;
+      if (url1 === "") {
+        setData(null);
+        setError1(null);
+        setLoading1(false);
+        return;
+      }
 
       setLoading1(true);
       try {
@@ -76,6 +93,7 @@ const Graph = () => {
             Accept: "application/json",
           },
         });
+        console.log(response.data);
         if (response.data) {
           setData(response.data);
           setError1(null);
@@ -95,7 +113,12 @@ const Graph = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (url2 === "") return;
+      if (url2 === "") {
+        setData2(null);
+        setError2(null);
+        setLoading2(false);
+        return;
+      }
 
       setLoading2(true);
       try {
@@ -123,86 +146,125 @@ const Graph = () => {
 
   const renderGraph = (graphType, data) => {
     switch (graphType.graph) {
-      case "Load Estimation":
+      case "Flux vs Time - Line Graph":
         return (
           <LineChart
             data={data}
-            width={1300}
+            width={1500}
             height={450}
-            xLabel={"Date"}
-            yLabel={"Flux"}
-            title={`Flux graph for Saskatchewan River at Grand Rapids`}
-            startDate={`${graphType.startDate}-01-01`}
-            endDate={`${graphType.endDate}2013-01-01`}
+            xLabel={"Date (YYYY-MM-DD)"}
+            yLabel={"Flux in 10^3 Kg/day"}
+            title={`Flux vs Time for Saskatchewan River at Grand Rapids`}
+            startDate={`${graphType.startDate}`}
+            endDate={`${graphType.endDate}`}
+            station={`${graphType.station}`}
           />
         );
-
+      case "Conc vs Time - Line Graph":
+        return (
+          <LineChart
+            data={data}
+            width={1500}
+            height={450}
+            xLabel={"Date"}
+            yLabel={"Concentration in mg/L"}
+            title={`Conc vs Time for Saskatchewan River at Grand Rapids`}
+            startDate={`${graphType.startDate}`}
+            endDate={`${graphType.endDate}`}
+            station={`${graphType.station}`}
+          />
+        );
+      case "Flux Q - Scatter Plot":
+        return (
+          <ScatterPlot
+            data={data}
+            width={1500}
+            height={450}
+            xLabel={"Discharge in m^3/s"}
+            yLabel={"Flux in 10^3 kg/day"}
+            title={`Flux vs Discharge for Saskatchewan River at Grand Rapids`}
+            startDate={`${graphType.startDate}`}
+            endDate={`${graphType.endDate}`}
+            station={`${graphType.station}`}
+          />
+        );
+      case "Conc Q - Scatter Plot":
+        return (
+          <ScatterPlot1
+            data={data}
+            width={1500}
+            height={450}
+            xLabel={"Discharge in m^3/s"}
+            yLabel={"Concentration in mg/L"}
+            title={`Conc vs Discharge for Saskatchewan River at Grand Rapids`}
+            startDate={`${graphType.startDate}`}
+            endDate={`${graphType.endDate}`}
+            station={`${graphType.station}`}
+          />
+        );
       case "Hydrograph":
         return <div></div>;
 
-      case "Discharge Gap - Line Graph":
+      case "Discharge vs Time - Line Graph":
         return (
           <LineChart
             data={data}
-            width={1200}
+            width={1500}
             height={450}
             xLabel={"Date"}
-            yLabel={"Discharge"}
-            title={`Discharge Gap for ${graphType.disStation}`}
+            yLabel={"Discharge in m^3/s"}
+            title={`Discharge vs Time for ${graphType.stationName}`}
+            startDate={`${graphType.startDate}`}
+            endDate={`${graphType.endDate}`}
+            station={`${graphType.stationName}`}
           />
         );
 
-      case "Discharge - Line Graph":
-        return (
-          <LineChart
-            data={data}
-            width={1300}
-            height={450}
-            xLabel={"Date"}
-            yLabel={"Discharge"}
-            title={`Discharge Graph for ${graphType.disStation}`}
-            startDate={"2000-01-01"}
-            endDate={"2001-01-01"}
-          />
-        );
-
-      case "Discharge - Box Plot":
+      case "Discharge vs Time - Box Plot":
         return (
           <BoxPlot
             data={data}
-            width={1300}
+            width={1500}
             height={450}
-            xLabel={"Year"}
-            yLabel={"Discharge"}
-            title={`Discharge Graph for ${graphType.disStation}`}
-            startDate={"2000-01-01"}
-            endDate={"2005-12-31"}
+            xLabel={"Date"}
+            yLabel={"Discharge in m^3/s"}
+            title={`Discharge vs Time for ${graphType.stationName}`}
+            startDate={`${graphType.startDate}`}
+            endDate={`${graphType.endDate}`}
+            temporal={`${graphType.temporal}`}
+            station={`${graphType.station}`}
           />
         );
 
-      case "Discharge - Violin Chart":
+      case "Discharge vs Time - Violin Chart":
         return (
           <ViolinChart
             data={data}
-            width={1300}
+            width={1500}
             height={450}
-            xLabel={"Year"}
-            yLabel={"Discharge"}
-            title={`Discharge Graph for ${graphType.disStation}`}
+            xLabel={"Date"}
+            yLabel={"Discharge in m^3/s"}
+            title={`Discharge vs Time for ${graphType.stationName}`}
+            startDate={`${graphType.startDate}`}
+            endDate={`${graphType.endDate}`}
+            temporal={`${graphType.temporal}`}
+            station={`${graphType.station}`}
           />
         );
 
-      case "Water Quality - Box Plot":
+      case "Water Quality vs Time - Box Plot":
         return (
           <BoxPlot
             data={data}
-            width={1300}
+            width={1500}
             height={450}
-            xLabel={"Year"}
-            yLabel={"Values"}
-            title={`WQ graph for ${graphType.wqStation}: ${graphType.characteristic}`}
-            startDate={"2000-01-01"}
-            endDate={"2005-12-31"}
+            xLabel={"Date"}
+            yLabel={"Observed Values in mg/L"}
+            title={` ${graphType.characteristic} vs Time graph for ${graphType.stationName}`}
+            startDate={`${graphType.startDate}`}
+            endDate={`${graphType.endDate}`}
+            temporal={`${graphType.temporal}`}
+            station={`${graphType.station}`}
           />
         );
 
@@ -225,27 +287,32 @@ const Graph = () => {
       >
         <button onClick={() => setMenu(false)}>Collapse</button>
         <div className="mt-5">
-          <div>Graph 1</div>
-          <TypeCard onGenerate={handleGraph1Click} />
+          <div>Add Graph</div>
+          <TypeCard onGenerate={handleGraph1Click} ID={"G1"}/>
         </div>
         <div className="mt-20">
           <div>
-            <div>Graph 2</div>
-            <TypeCard onGenerate={handleGraph2Click} />
+            <div>Add another Graph</div>
+            <TypeCard onGenerate={handleGraph2Click} ID={"G2"} />
           </div>
         </div>
       </div>
       <div className="py-5 px-5" style={{ display: menu ? "none" : "" }}>
         <button onClick={() => setMenu(true)}>expand</button>
       </div>
-
-      <div className="flex-1">
-        {loading1 && <div>Loading...</div>}
-        {error1 && <div>Error: {error1}</div>}
-        {graph1 && !loading1 && data && renderGraph(graph1, data)}
-        <div className="mt-0">
+      <div className="justify-center w-full container mx-auto ">
+        <div className="flex-grid">
+          {loading1 && <div>Loading...</div>}
+          {error1 && <div>Error: {error1}</div>}
+          {graph1 && !loading1 && !data && (
+            <div>Invlaid Parameters! pls provide valid </div>
+          )}
+          {graph1 && !loading1 && data && renderGraph(graph1, data)}
           {loading2 && <div>Loading...</div>}
           {error2 && <div>Error: {error2}</div>}
+          {graph2 && !loading2 && !data2 && (
+            <div>Invlaid Parameters! pls provide valid </div>
+          )}
           {graph2 && !loading2 && data2 && renderGraph(graph2, data2)}
         </div>
       </div>
