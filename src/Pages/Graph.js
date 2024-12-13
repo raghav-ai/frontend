@@ -8,7 +8,7 @@ import ScatterPlot from "../components/ScatterPlot";
 import ScatterPlot1 from "../components/ScatterPlot1";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: "https://api-jemx.onrender.com",
   withCredentials: true,
 });
 

@@ -10,7 +10,7 @@ import TextField from "@mui/material/TextField";
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: "https://api-jemx.onrender.com",
   withCredentials: true,
 });
 const TypeCard = ({ onGenerate, ID }) => {
