@@ -3,7 +3,7 @@ import Mapa from "../../Pages/Map";
 import Data from "../../Pages/Data";
 import Graph from "../../Pages/Graph";
 import App from "../App";
-//import Home from "../../Pages/Home";
+import Home from "../../Pages/Home";
 import DIStation from "../../Pages/distation";
 import DisData from "../../Pages/disData";
 import WQStation from "../../Pages/wqStat";
@@ -17,7 +17,7 @@ const Router = createBrowserRouter(
       children: [
         {
           path: "", // Changed from "/"
-          element: <Mapa />,
+          element: <Home />,
         },
         {
           path: "map", // Removed leading slash

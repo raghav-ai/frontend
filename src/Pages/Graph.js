@@ -6,13 +6,18 @@ import TypeCard from "../components/TypeCard";
 import axios from "axios";
 import ScatterPlot from "../components/ScatterPlot";
 import ScatterPlot1 from "../components/ScatterPlot1";
+import { useSearchParams } from "react-router-dom";
 
 const axiosInstance = axios.create({
-  baseURL: "https://api-jemx.onrender.com",
+  //baseURL: "https://api-jemx.onrender.com",
+  baseURL: "http://localhost:8080",
   withCredentials: true,
 });
 
 const Graph = () => {
+
+  const [searchParams] = useSearchParams();
+  const [param,setParam] = useState(searchParams.get("station"));
   const [graph1, setGraph1] = useState(null);
   const [graph2, setGraph2] = useState(null);
   const [url1, setUrl1] = useState("");
@@ -30,8 +35,7 @@ const Graph = () => {
     console.log(graph);
     const {
       graph: graphType,
-      wqStation,
-      disStation,
+      Station,
       characteristic,
       load,
     } = graph;
@@ -54,15 +58,15 @@ const Graph = () => {
           ? `cqf-calculation?nutrients=` + encodeURIComponent(load)
           : "";
       case "Hydrograph":
-        return wqStation && disStation && characteristic ? "" : "";
+        return Station && characteristic ? "" : "";
       case "Discharge vs Time - Line Graph":
       case "Discharge vs Time - Box Plot":
       case "Discharge vs Time - Violin Chart":
-        return disStation ? `/discharge-data/${disStation}` : "";
+        return Station ? `/discharge-data/${Station}` : "";
       case "Water Quality vs Time - Box Plot":
       case "Water Quality - Scatter Plot":
-        return wqStation && characteristic
-          ? `/wq-data/${wqStation}?nutrients=${characteristic}`
+        return Station && characteristic
+          ? `/wq-data/${Station}?nutrients=${characteristic}`
           : "";
       default:
         return "";
@@ -157,7 +161,7 @@ const Graph = () => {
             title={`Flux vs Time for Saskatchewan River at Grand Rapids`}
             startDate={`${graphType.startDate}`}
             endDate={`${graphType.endDate}`}
-            station={`${graphType.station}`}
+            station={`${graphType.stationName}`}
           />
         );
       case "Conc vs Time - Line Graph":
@@ -171,7 +175,7 @@ const Graph = () => {
             title={`Conc vs Time for Saskatchewan River at Grand Rapids`}
             startDate={`${graphType.startDate}`}
             endDate={`${graphType.endDate}`}
-            station={`${graphType.station}`}
+            station={`${graphType.stationName}`}
           />
         );
       case "Flux Q - Scatter Plot":
@@ -185,7 +189,7 @@ const Graph = () => {
             title={`Flux vs Discharge for Saskatchewan River at Grand Rapids`}
             startDate={`${graphType.startDate}`}
             endDate={`${graphType.endDate}`}
-            station={`${graphType.station}`}
+            station={`${graphType.stationName}`}
           />
         );
       case "Conc Q - Scatter Plot":
@@ -199,7 +203,7 @@ const Graph = () => {
             title={`Conc vs Discharge for Saskatchewan River at Grand Rapids`}
             startDate={`${graphType.startDate}`}
             endDate={`${graphType.endDate}`}
-            station={`${graphType.station}`}
+            station={`${graphType.stationName}`}
           />
         );
       case "Hydrograph":
@@ -232,7 +236,7 @@ const Graph = () => {
             startDate={`${graphType.startDate}`}
             endDate={`${graphType.endDate}`}
             temporal={`${graphType.temporal}`}
-            station={`${graphType.station}`}
+            station={`${graphType.stationName}`}
           />
         );
 
@@ -248,7 +252,7 @@ const Graph = () => {
             startDate={`${graphType.startDate}`}
             endDate={`${graphType.endDate}`}
             temporal={`${graphType.temporal}`}
-            station={`${graphType.station}`}
+            station={`${graphType.stationName}`}
           />
         );
 
@@ -264,7 +268,7 @@ const Graph = () => {
             startDate={`${graphType.startDate}`}
             endDate={`${graphType.endDate}`}
             temporal={`${graphType.temporal}`}
-            station={`${graphType.station}`}
+            station={`${graphType.stationName}`}
           />
         );
 
@@ -288,7 +292,7 @@ const Graph = () => {
         <button onClick={() => setMenu(false)}>Collapse</button>
         <div className="mt-5">
           <div>Add Graph</div>
-          <TypeCard onGenerate={handleGraph1Click} ID={"G1"}/>
+          <TypeCard onGenerate={handleGraph1Click} ID={"G1"} selected={param}/>
         </div>
         <div className="mt-20">
           <div>

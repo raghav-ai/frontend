@@ -3,7 +3,8 @@ import axios from "axios";
 
 // Create axios instance with default config
 const axiosInstance = axios.create({
-  baseURL: "https://api-jemx.onrender.com",
+  //baseURL: "https://api-jemx.onrender.com",
+  baseURL: "http://localhost:8080",
   withCredentials: true,
 });
 

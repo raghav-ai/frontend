@@ -1,34 +1,27 @@
 const Home = () => {
   return (
     <div className="container mx-auto gap-4 p-20  bg-slate-200  ">
-      <p className="text-2xl">Clawave Prototype</p>
-
-      <p>Overview</p>
+      <p className="text-2xl">About Clawave</p>
       <p>
-        Chemical Load Assessments for Watersheds - Automation and Visualization
-        Experience (CLAWAVE).
-        <br />
-        The project is aiming to provide automation, extraction, treatment and visuzalization of
-        concentrations, flow chemical loads and related water quality indicators
-        in watersheds.
-        
+        CLAWAVE is a visualization toolkit developed to transform water quality
+        monitoring and decision-making within Canada and beyond, It utilizes
+        both historical and newly gathered water quality data to streamline
+        processes for watershed managers, thus expediting the transfer of water
+        quality knowledge into actionable strategies. This prototype is designed
+        to demonstrate its robust capabilities in various assessing nutrient
+        loads in Lake Winnipeg. Additionally, CLAWAVE’s advanced storytelling
+        and visualization features are engineered to make water quality data
+        more accessible and interpretable for all stakeholders, enhancing
+        community involvement and empowering especially Indigenous communities
+        to take a more active role in managing their water resources
+        effectively.
       </p>
-
-      <p>The Prototype</p>
-      The prototype provides access to Water Quality and discharge data collected from DataStream and ECCC (Hydat database) thorugh tabular and graphical interfaces. 
-      It currently uses WRTDS method for load calculations based on matched stations with sufficient data in the lake Winnipeg region. 
-      The load calculations are done only on data from the year 2000.
-
-      <p>Partners</p>
-      <div>Put Images of the partners</div>
-
+      <br />
       <p> Current Version 1.1</p>
       <p>Things to come in next versions: </p>
       <ul className="list-disc list-inside">
         <li>Comparision between stations</li>
-        <li>Seasonal Graph filter</li>
-        <li>Data for more stations</li>
-        <li>Automation integration of data from currnet sources</li>
+        <li>testing Automation integration of data from currnet sources</li>
       </ul>
     </div>
   );

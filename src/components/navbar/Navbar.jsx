@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 const Navbar = () => {
   return (
     <div className="bg-slate-600 z-100 ">
-      <div className="container mx-auto flex justify-around py-5">
+      <div className="container mx-auto flex justify-around py-3">
         <Link to="/">
           <h1 className="sm:text-lg lg:text-3xl font-bold text-slate-50">
            CLAWAVE PROTOTYPE
