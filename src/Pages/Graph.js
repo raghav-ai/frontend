@@ -9,8 +9,8 @@ import ScatterPlot1 from "../components/ScatterPlot1";
 import { useSearchParams } from "react-router-dom";
 
 const axiosInstance = axios.create({
-  //baseURL: "https://api-jemx.onrender.com",
-  baseURL: "http://localhost:8080",
+  baseURL: "https://api-jemx.onrender.com",
+  //baseURL: "http://localhost:8080",
   withCredentials: true,
 });
 

@@ -11,8 +11,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Stack, Typography } from "@mui/material";
 // Create axios instance with default config
 const axiosInstance = axios.create({
-  //baseURL: "https://api-jemx.onrender.com",
-  baseURL: "http://localhost:8080",
+  baseURL: "https://api-jemx.onrender.com",
+  //baseURL: "http://localhost:8080",
   withCredentials: true,
 });
 
@@ -177,7 +177,7 @@ const WQData = () => {
             to={"/wqs/" + meta?.doi?.slice(9)}
             className="cursor-pointer text-blue-600 underline"
           >
-            {(meta.doi)}
+            {meta.doi}
           </Link>{" "}
         </div>
         <p>Location ID: {meta.locationId} </p>
@@ -192,7 +192,7 @@ const WQData = () => {
             : "N/A"}
         </p>
         <p>Location Type: {meta.monitoringLocationType} </p>
-        <p>Hub: {" "}{meta.hub}</p>
+        <p>Hub: {meta.hub}</p>
       </div>
       <div className="">
         <div className="px-6 py-3 flex gap-20">
