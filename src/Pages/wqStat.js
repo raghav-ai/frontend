@@ -3,11 +3,12 @@ import axios from "axios";
 import { FaCaretUp, FaCaretDown } from "react-icons/fa6";
 import { Link, useParams } from "react-router-dom";
 import CustomSelect from "../components/Select";
-
-// Create axios instance with default config
+const BASE_URL =
+  process.env.REACT_APP_TYPE === "production"
+    ? "https://api-jemx.onrender.com"
+    : "http://localhost:8080";
 const axiosInstance = axios.create({
-  baseURL: "https://api-jemx.onrender.com",
-  //baseURL: "http://localhost:8080",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
@@ -58,11 +59,14 @@ const WQStation = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get("/wqs-data?doi=" + id + (url ? "&" + url : "") , {
-          headers: {
-            Accept: "application/json",
-          },
-        });
+        const response = await axiosInstance.get(
+          "/wqs-data?doi=" + id + (url ? "&" + url : ""),
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
         console.log(response.data);
         if (response.data !== null) {
           setData(response.data);
@@ -337,12 +341,18 @@ const WQStation = () => {
                           {indexOfFirstRow + index + 1}
                         </td>
                         <td className=" py-4 ">
-                          <Link
-                            to={"/wq/" + item.locationId}
-                            className="cursor-pointer text-blue-500 underline"
-                          >
-                            {item.locationId}
-                          </Link>
+                          {item.hub === "lakewinnipeg" ? (
+                            <Link
+                              to={"/wq/" + item.locationId}
+                              className={
+                                " text-blue-500 underline cursor-pointer"
+                              }
+                            >
+                              {item.locationId}
+                            </Link>
+                          ) : (
+                            item.locationId
+                          )}
                         </td>
                         <td className="px-4 py-4  ">{item.name}</td>
                         <td className=" py-4  ">

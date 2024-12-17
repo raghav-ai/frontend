@@ -6,6 +6,7 @@ import App from "./app/App";
 import Router from "./app/routes/Router";
 import { RouterProvider } from "react-router-dom";
 import "leaflet/dist/leaflet.css"
+//require('dotenv').config()
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

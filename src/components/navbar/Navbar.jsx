@@ -5,10 +5,13 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-around py-3">
         <Link to="/">
           <h1 className="sm:text-lg lg:text-3xl font-bold text-slate-50">
-           CLAWAVE PROTOTYPE
+            CLAWAVE PROTOTYPE
           </h1>
         </Link>
-        <div className="flex w-1/5 gap-5 justify-around text-2xl font-semibold text-slate-50 ">
+        <div className="flex w-fit gap-5 justify-around text-2xl font-semibold text-slate-50">
+          <Link to="/" className="hover:text-black">
+            About{" "}
+          </Link>
           <Link to="/map" className="hover:text-black">
             Map{" "}
           </Link>
@@ -16,7 +19,7 @@ const Navbar = () => {
             Data{" "}
           </Link>
           <Link to="/graph" className="hover:text-black">
-            Graph{" "}
+            Create Visuzalization{" "}
           </Link>
         </div>
       </div>

@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-// Create axios instance with default config
+const BASE_URL = process.env.REACT_APP_TYPE=== 'production' 
+  ? 'https://api-jemx.onrender.com'
+  : 'http://localhost:8080';
 const axiosInstance = axios.create({
-  baseURL: "https://api-jemx.onrender.com",
-  //baseURL: "http://localhost:8080",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
-
 const WQSet = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);

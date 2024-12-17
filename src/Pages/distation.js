@@ -3,13 +3,14 @@ import axios from "axios";
 import CustomSelect from "../components/Select";
 import { FaCaretUp, FaCaretDown } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-
-// Create axios instance with default config
+const BASE_URL = process.env.REACT_APP_TYPE=== 'production' 
+  ? 'https://api-jemx.onrender.com'
+  : 'http://localhost:8080';
 const axiosInstance = axios.create({
-  //baseURL: "http://localhost:8080",
-  baseURL: "https://api-jemx.onrender.com",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
+
 
 const DIStation = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,7 +40,6 @@ const DIStation = () => {
     "SK",
     "WA",
     "YT",
-    "ZZ",
   ];
   const status = ["Active", "Discontinued"];
   const [loading, setLoading] = useState(true);
@@ -53,7 +53,7 @@ const DIStation = () => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get(
-          "/discharge-station-data?" +
+          "/lw-discharge-station-data?" +
             url +
             (url !== "" && searchUrl !== ""
               ? "&" + searchUrl

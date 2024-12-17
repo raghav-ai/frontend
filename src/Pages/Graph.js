@@ -7,17 +7,18 @@ import axios from "axios";
 import ScatterPlot from "../components/ScatterPlot";
 import ScatterPlot1 from "../components/ScatterPlot1";
 import { useSearchParams } from "react-router-dom";
-
+const BASE_URL =
+  process.env.REACT_APP_TYPE === "production"
+    ? "https://api-jemx.onrender.com"
+    : "http://localhost:8080";
 const axiosInstance = axios.create({
-  baseURL: "https://api-jemx.onrender.com",
-  //baseURL: "http://localhost:8080",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
 const Graph = () => {
-
   const [searchParams] = useSearchParams();
-  const [param,setParam] = useState(searchParams.get("station"));
+  const [param, setParam] = useState(searchParams.get("station"));
   const [graph1, setGraph1] = useState(null);
   const [graph2, setGraph2] = useState(null);
   const [url1, setUrl1] = useState("");
@@ -33,29 +34,31 @@ const Graph = () => {
   const buildUrl = (graph) => {
     if (!graph) return "";
     console.log(graph);
-    const {
-      graph: graphType,
-      Station,
-      characteristic,
-      load,
-    } = graph;
+    const { graph: graphType, Station, characteristic, load } = graph;
     switch (graphType) {
       case "Flux vs Time - Line Graph":
         return load
           ? `load-calculation?nutrients=` +
               encodeURIComponent(load) +
+              `&station=` +
+              encodeURIComponent(Station) +
               `&gType=ft`
           : "";
       case "Conc vs Time - Line Graph":
         return load
           ? `load-calculation?nutrients=` +
               encodeURIComponent(load) +
+              `&station=` +
+              encodeURIComponent(Station) +
               `&gType=ct`
           : "";
       case "Flux Q - Scatter Plot":
       case "Conc Q - Scatter Plot":
         return load
-          ? `cqf-calculation?nutrients=` + encodeURIComponent(load)
+          ? `cqf-calculation?nutrients=` +
+              encodeURIComponent(load) +
+              `&station=` +
+              encodeURIComponent(Station)
           : "";
       case "Hydrograph":
         return Station && characteristic ? "" : "";
@@ -155,7 +158,7 @@ const Graph = () => {
           <LineChart
             data={data}
             width={1500}
-            height={450}
+            height={480}
             xLabel={"Date (YYYY-MM-DD)"}
             yLabel={"Flux in 10^3 Kg/day"}
             title={`Flux vs Time for Saskatchewan River at Grand Rapids`}
@@ -169,7 +172,7 @@ const Graph = () => {
           <LineChart
             data={data}
             width={1500}
-            height={450}
+            height={480}
             xLabel={"Date"}
             yLabel={"Concentration in mg/L"}
             title={`Conc vs Time for Saskatchewan River at Grand Rapids`}
@@ -183,7 +186,7 @@ const Graph = () => {
           <ScatterPlot
             data={data}
             width={1500}
-            height={450}
+            height={480}
             xLabel={"Discharge in m^3/s"}
             yLabel={"Flux in 10^3 kg/day"}
             title={`Flux vs Discharge for Saskatchewan River at Grand Rapids`}
@@ -197,7 +200,7 @@ const Graph = () => {
           <ScatterPlot1
             data={data}
             width={1500}
-            height={450}
+            height={480}
             xLabel={"Discharge in m^3/s"}
             yLabel={"Concentration in mg/L"}
             title={`Conc vs Discharge for Saskatchewan River at Grand Rapids`}
@@ -214,7 +217,7 @@ const Graph = () => {
           <LineChart
             data={data}
             width={1500}
-            height={450}
+            height={480}
             xLabel={"Date"}
             yLabel={"Discharge in m^3/s"}
             title={`Discharge vs Time for ${graphType.stationName}`}
@@ -229,7 +232,7 @@ const Graph = () => {
           <BoxPlot
             data={data}
             width={1500}
-            height={450}
+            height={480}
             xLabel={"Date"}
             yLabel={"Discharge in m^3/s"}
             title={`Discharge vs Time for ${graphType.stationName}`}
@@ -245,7 +248,7 @@ const Graph = () => {
           <ViolinChart
             data={data}
             width={1500}
-            height={450}
+            height={480}
             xLabel={"Date"}
             yLabel={"Discharge in m^3/s"}
             title={`Discharge vs Time for ${graphType.stationName}`}
@@ -261,7 +264,7 @@ const Graph = () => {
           <BoxPlot
             data={data}
             width={1500}
-            height={450}
+            height={480}
             xLabel={"Date"}
             yLabel={"Observed Values in mg/L"}
             title={` ${graphType.characteristic} vs Time graph for ${graphType.stationName}`}
@@ -282,7 +285,6 @@ const Graph = () => {
 
   const handleGraph1Click = (value) => setGraph1(value);
   const handleGraph2Click = (value) => setGraph2(value);
-
   return (
     <div className="flex w-full h-screen">
       <div
@@ -291,12 +293,16 @@ const Graph = () => {
       >
         <button onClick={() => setMenu(false)}>Collapse</button>
         <div className="mt-5">
-          <div>Add Graph</div>
-          <TypeCard onGenerate={handleGraph1Click} ID={"G1"} selected={param}/>
+          <div>Plot Graph 2</div>
+          <TypeCard
+            onGenerate={handleGraph1Click}
+            ID={"G1"}
+            selectedStation={param}
+          />
         </div>
         <div className="mt-20">
           <div>
-            <div>Add another Graph</div>
+            <div>Plot Graph 1</div>
             <TypeCard onGenerate={handleGraph2Click} ID={"G2"} />
           </div>
         </div>

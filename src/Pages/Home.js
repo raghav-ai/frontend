@@ -1,7 +1,8 @@
+import Image from "../lwmap.jpg";
 const Home = () => {
   return (
     <div className="container mx-auto gap-4 p-20  bg-slate-200  ">
-      <p className="text-2xl">About Clawave</p>
+      <p className="text-3xl font-bold">About Clawave</p>
       <p>
         CLAWAVE is a visualization toolkit developed to transform water quality
         monitoring and decision-making within Canada and beyond, It utilizes
@@ -17,12 +18,14 @@ const Home = () => {
         effectively.
       </p>
       <br />
-      <p> Current Version 1.1</p>
-      <p>Things to come in next versions: </p>
-      <ul className="list-disc list-inside">
-        <li>Comparision between stations</li>
-        <li>testing Automation integration of data from currnet sources</li>
-      </ul>
+      <img
+        src={Image}
+        alt="description"
+        style={{ maxWidth: "40%", height: "auto" }}
+      />
+
+      <br />
+     Pls report any issues found over <a href="https://github.com/raghav-ai/frontend/issues"className="text-blue-500 font-semibold">here.</a>
     </div>
   );
 };

@@ -7,13 +7,16 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Stack, Typography } from "@mui/material";
-// Create axios instance with default config
+import { Link } from "react-router-dom";
+
+const BASE_URL =
+  process.env.REACT_APP_TYPE === "production"
+    ? "https://api-jemx.onrender.com"
+    : "http://localhost:8080";
 const axiosInstance = axios.create({
-  baseURL: "https://api-jemx.onrender.com",
-  //baseURL: "http://localhost:8080",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
-
 const DisData = () => {
   const { id } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,7 +27,9 @@ const DisData = () => {
   const [error, setError] = useState(null);
   const [url, setUrl] = useState("");
   const [sort, setSort] = useState(null);
-  const [startDate, setStartDate] = useState(dayjs("2000-01-01").format("YYYY-MM-DD"));
+  const [startDate, setStartDate] = useState(
+    dayjs("2000-01-01").format("YYYY-MM-DD")
+  );
   const [endDate, setEndDate] = useState(dayjs().format("YYYY-MM-DD"));
 
   useEffect(() => {
@@ -136,21 +141,52 @@ const DisData = () => {
   return (
     <div className="container mx-auto w-full ">
       <p className="font-bold text-4xl ml-10">{meta.stationName}</p>
-      <div className="ml-16 font-semibold text-xl mt-5">
-        <p>Station No: {meta.stationNo} </p>
-        <p>Province: {meta.province} </p>
-        <p>Status: {meta.status} </p>
-        <p>
-          Latitude:{" "}
-          {typeof meta.latitude === "number" ? meta.latitude.toFixed(4) : "N/A"}
-        </p>
-        <p>
-          Longitude:{" "}
-          {typeof meta.longitude === "number"
-            ? meta.longitude.toFixed(4)
-            : "N/A"}
-        </p>
+      <div className="flex w-1/2  justify-between mt-5 ">
+        <div className="ml-16 font-semibold text-xl ">
+          <p>Station No: {meta.stationNo} </p>
+          <p>Province: {meta.province} </p>
+          <p>Status: {meta.status} </p>
+          <p>
+            Latitude:{" "}
+            {typeof meta.latitude === "number"
+              ? meta.latitude.toFixed(4)
+              : "N/A"}
+          </p>
+          <p>
+            Longitude:{" "}
+            {typeof meta.longitude === "number"
+              ? meta.longitude.toFixed(4)
+              : "N/A"}
+          </p>
+        </div>
+        <div className="grid mr-16 ">
+          <Link
+            to={
+              "/graph?station=" +
+              meta.stationName +
+              " - " +
+              meta.stationNo +
+              " dis"
+            }
+            className="font-semibold text-xl text-blue-500"
+          >
+            Plot Graph
+          </Link>
+          <Link
+            to={
+              "/map?lat=" +
+              meta.latitude +
+              "&&long=" +
+              meta.longitude +
+              "&&zoom=15"
+            }
+            className="font-semibold text-xl text-blue-500"
+          >
+            View on Map
+          </Link>
+        </div>
       </div>
+
       <div className="">
         <div className="px-6 py-3 flex gap-20">
           <LocalizationProvider dateAdapter={AdapterDayjs}>

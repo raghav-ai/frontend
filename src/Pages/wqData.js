@@ -9,10 +9,12 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Stack, Typography } from "@mui/material";
-// Create axios instance with default config
+const BASE_URL =
+  process.env.REACT_APP_TYPE === "production"
+    ? "https://api-jemx.onrender.com"
+    : "http://localhost:8080";
 const axiosInstance = axios.create({
-  baseURL: "https://api-jemx.onrender.com",
-  //baseURL: "http://localhost:8080",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
@@ -170,29 +172,53 @@ const WQData = () => {
   return (
     <div className="container mx-auto w-full ">
       <p className="font-bold text-4xl ml-10">{meta.name}</p>
-      <div className="ml-16 font-semibold text-xl mt-5">
-        <div className="flex">
-          <p>DOI: </p>
-          <Link
-            to={"/wqs/" + meta?.doi?.slice(9)}
-            className="cursor-pointer text-blue-600 underline"
-          >
-            {meta.doi}
-          </Link>{" "}
+      <div className="flex w-1/2  justify-between mt-5 ">
+        <div className="ml-16 font-semibold text-xl">
+          <div className="flex">
+            <p>DOI: </p>
+            <Link
+              to={"/wqs/" + meta?.doi?.slice(9)}
+              className="cursor-pointer text-blue-600 underline"
+            >
+              {meta.doi}
+            </Link>{" "}
+          </div>
+          <p>Location ID: {meta.locationId} </p>
+          <p>
+            Latitude:{" "}
+            {typeof meta.latitude === "number"
+              ? meta.latitude.toFixed(4)
+              : "N/A"}
+          </p>
+          <p>
+            Longitude:{" "}
+            {typeof meta.longitude === "number"
+              ? meta.longitude.toFixed(4)
+              : "N/A"}
+          </p>
+          <p>Location Type: {meta.monitoringLocationType} </p>
+          <p>Hub: {meta.hub}</p>
         </div>
-        <p>Location ID: {meta.locationId} </p>
-        <p>
-          Latitude:{" "}
-          {typeof meta.latitude === "number" ? meta.latitude.toFixed(4) : "N/A"}
-        </p>
-        <p>
-          Longitude:{" "}
-          {typeof meta.longitude === "number"
-            ? meta.longitude.toFixed(4)
-            : "N/A"}
-        </p>
-        <p>Location Type: {meta.monitoringLocationType} </p>
-        <p>Hub: {meta.hub}</p>
+        <div className="grid mr-16 ">
+          <Link
+            to={"/graph?station=" + meta.name + " - " + meta.locationId + " wq"}
+            className="font-semibold text-xl text-blue-500"
+          >
+            Plot Graph
+          </Link>
+          <Link
+            to={
+              "/map?lat=" +
+              meta.latitude +
+              "&&long=" +
+              meta.longitude +
+              "&&zoom=15"
+            }
+            className="font-semibold text-xl text-blue-500"
+          >
+            View on Map
+          </Link>
+        </div>
       </div>
       <div className="">
         <div className="px-6 py-3 flex gap-20">

@@ -3,11 +3,11 @@ import axios from "axios";
 import CustomSelect from "../components/Select";
 import { FaCaretUp, FaCaretDown } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-
-// Create axios instance with default config
+const BASE_URL = process.env.REACT_APP_TYPE=== 'production' 
+  ? 'https://api-jemx.onrender.com'
+  : 'http://localhost:8080';
 const axiosInstance = axios.create({
-  baseURL: "https://api-jemx.onrender.com",
-  //baseURL: "http://localhost:8080",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 

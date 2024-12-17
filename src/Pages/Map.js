@@ -5,14 +5,14 @@ import MarkerClusterGroup from "react-leaflet-cluster";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Card } from "@mui/material";
-import CustomSelect from "../components/Select";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-
-// Create axios instance with default config
+const BASE_URL =
+  process.env.REACT_APP_TYPE === "production"
+    ? "https://api-jemx.onrender.com"
+    : "http://localhost:8080";
 const axiosInstance = axios.create({
-  baseURL: "https://api-jemx.onrender.com",
-  //baseURL: "http://localhost:8080",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
@@ -43,6 +43,64 @@ export default function Mapa() {
     WQ_Stations: true,
     Load: false,
   });
+  const ldata = [
+    {
+      latitude: 53.16389083862305,
+      longitude: -99.34889221191406,
+      stationNo: "05KL001",
+      stationName: "SASKATCHEWAN RIVER AT GRAND RAPIDS",
+      province: "MB",
+      status: "Active",
+      locationId: 37077,
+      doi: "10.25976/x5wn-0523",
+      name: "SASKATCHEWAN RIVER (AT GRAND RAPIDS)",
+      qlatitude: 53.16051,
+      qlongitude: -99.26573,
+      monitoringLocationType: "River/Stream",
+    },
+    {
+      latitude: 50.567501068115234,
+      longitude: -96.17749786376952,
+      stationNo: "05PF069",
+      stationName: "WINNIPEG RIVER AT PINE FALLS GENERATING STATION",
+      province: "MB",
+      status: "Active",
+      locationId: 37078,
+      doi: "10.25976/x5wn-0523",
+      name: "WINNIPEG RIVER (AT PINE FALLS)",
+      qlatitude: 50.56766,
+      qlongitude: -96.17697,
+      monitoringLocationType: "River/Stream",
+    },
+    {
+      latitude: 51.56489181518555,
+      longitude: -101.91655731201172,
+      stationNo: "05MD004",
+      stationName: "ASSINIBOINE RIVER AT KAMSACK",
+      province: "SK",
+      status: "Active",
+      locationId: 790108,
+      doi: "10.25976/tm9b-c550",
+      name: "ASSINIBOINE RIVER AT HWY 8 BRIDGE",
+      qlatitude: 51.5331,
+      qlongitude: -101.8889,
+      monitoringLocationType: "River/Stream",
+    },
+    {
+      latitude: 49.00374984741211,
+      longitude: -97.2238311767578,
+      stationNo: "05OC001",
+      stationName: "RED RIVER AT EMERSON",
+      province: "MB",
+      status: "Active",
+      locationId: 790110,
+      doi: "10.25976/tm9b-c550",
+      name: "RED RIVER AT EMERSON, MANITOBA",
+      qlatitude: 49.0081,
+      qlongitude: -97.2106,
+      monitoringLocationType: "River/Stream",
+    },
+  ];
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -132,6 +190,12 @@ export default function Mapa() {
     iconAnchor: [0, 0],
     popupAnchor: [0, -10],
   });
+  const customIcon2 = new Icon({
+    iconUrl: "assets/redcircle.svg",
+    iconSize: [20, 20],
+    iconAnchor: [0, 0],
+    popupAnchor: [0, -10],
+  });
 
   const createClusterCustomIcon = function (cluster) {
     return divIcon({
@@ -145,6 +209,13 @@ export default function Mapa() {
     return divIcon({
       html: `<div>${cluster.getChildCount()}</div>`,
       className: "custom-marker-cluster-1",
+      iconSize: [48, 48],
+    });
+  };
+  const createClusterCustomIcon2 = function (cluster) {
+    return divIcon({
+      html: `<div>${cluster.getChildCount()}</div>`,
+      className: "custom-marker-cluster-2",
       iconSize: [48, 48],
     });
   };
@@ -223,7 +294,9 @@ export default function Mapa() {
                             d.stationNo +
                             " dis"
                           }
-                        >Plot</Link>
+                        >
+                          Plot Graph
+                        </Link>
                       </div>
                     </Popup>
                   </Marker>
@@ -288,7 +361,128 @@ export default function Mapa() {
                             d.locationId +
                             " wq"
                           }
-                        >Plot</Link>
+                        >
+                          Plot Graph
+                        </Link>
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+              </MarkerClusterGroup>
+            )}
+
+            {checkedItems.Load && (
+              <MarkerClusterGroup
+                chunkedLoading
+                maxClusterRadius={150}
+                spiderfyOnMaxZoom={true}
+                showCoverageOnHover={false}
+                iconCreateFunction={createClusterCustomIcon2}
+              >
+                {ldata.map((d) => (
+                  <Marker
+                    position={[d.latitude, d.longitude]}
+                    icon={customIcon2}
+                    key={`datatemp-${d.stationNo}`}
+                    eventHandlers={{
+                      click: (e) => {
+                        HandleClick(d.latitude, d.longitude, e);
+                      },
+                      mouseover: (e) => {
+                        e.target
+                          .bindTooltip(
+                            d.stationName + ", (" + d.stationNo + ")"
+                          )
+                          .openTooltip();
+                      },
+                      mouseout: (e) => {
+                        e.target.closeTooltip();
+                      },
+                    }}
+                  >
+                    <Popup>
+                      <div className="text-black font-semibold text-lg w-80">
+                        <Link
+                          to={"/dis-data/" + d.stationNo}
+                          className="text-blue-500 underline cursor-pointer"
+                        >
+                          {" "}
+                          {d.stationName}
+                        </Link>
+                        <br /> Station No. : {d.stationNo}
+                        <br /> Province : {d.province}
+                        <br /> Status : {d.status}
+                        <br /> Latitude : {d.latitude.toFixed(4)}
+                        <br /> Longitude : {d.longitude.toFixed(4)}
+                        <br />
+                        <Link
+                          to={
+                            "/graph?station=" +
+                            d.stationName +
+                            " - " +
+                            d.stationNo +
+                            " load"
+                          }
+                        >
+                          Plot Graph
+                        </Link>
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+                {ldata.map((d) => (
+                  <Marker
+                    key={`wqdatatemp-${d.locationId}`}
+                    position={[d.qlatitude, d.qlongitude]}
+                    icon={customIcon2}
+                    eventHandlers={{
+                      click: (e) => {
+                        HandleClick(d.qlatitude, d.qlongitude, e);
+                      },
+                      mouseover: (e) => {
+                        e.target
+                          .bindTooltip(d.name + ", (" + d.locationId + ")")
+                          .openTooltip();
+                      },
+                      mouseout: (e) => {
+                        e.target.closeTooltip();
+                      },
+                    }}
+                  >
+                    <Popup>
+                      <div className="text-black text-lg font-semibold w-80">
+                        <Link
+                          to={"/wq/" + d.locationId}
+                          className="text-blue-500 underline cursor-pointer"
+                        >
+                          {" "}
+                          {d.name}
+                        </Link>
+                        <br /> DOI :{" "}
+                        <Link
+                          to={"/wqs/" + d.doi.slice(9)}
+                          className="text-blue-500 underline cursor-pointer"
+                        >
+                          {" "}
+                          {d.doi}
+                        </Link>
+                        <br /> ID: {d.locationId}
+                        <br /> Monitoring Location Type :{" "}
+                        {d.monitoringLocationType}
+                        <br /> Latitude : {d.qlatitude.toFixed(4)}
+                        <br /> Longitude : {d.qlongitude.toFixed(4)}
+                        <br />
+                        <Link
+                          to={
+                            "/graph?station=" +
+                            d.name +
+                            " - " +
+                            d.locationId +
+                            " load"
+                          }
+                        >
+                          Plot Graph
+                        </Link>
                       </div>
                     </Popup>
                   </Marker>
@@ -328,7 +522,7 @@ export default function Mapa() {
                 checked={checkedItems.Discharge_Stations}
                 onChange={handleChange}
               />
-              <label htmlFor="Discharge_Stations">Discahrge Stations</label>
+              <label htmlFor="Discharge_Stations">Discharge Stations</label>
             </div>
 
             <div>
